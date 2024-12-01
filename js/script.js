@@ -205,6 +205,5 @@ form.addEventListener('submit', (event) => {
   if (passValidation()) {
     form.submit()
   }
-  // isValidEmail(email);
 });
 
