@@ -23,6 +23,8 @@ window.addEventListener("load", (event) => {
 jobTitleInput.addEventListener("change", () => {
   if (jobTitleInput.value === "other") {
     otherJobRole.style.display = "block";
+  } else {
+    otherJobRole.style.display = "none";
   }
 })
 
@@ -31,6 +33,7 @@ jobTitleInput.addEventListener("change", () => {
 // Shirt design correlation 
 shirtDesign.addEventListener("change", () => {
   var selectedDesign = shirtDesign.value;
+  var selectedShirtColor = shirtColor.dataset.theme;
   if (shirtDesign.value) {
     shirtColor.disabled = false;
     
@@ -41,8 +44,14 @@ shirtDesign.addEventListener("change", () => {
         shirtColorOptions[i].hidden = false;
       }
     }
+//  selectedPayment.querySelector('[value="credit-card"]').selected = true; 
   } else {
     shirtColor.disabled = true;
+  }
+
+  // if selected design doesn't have that colour - reset
+  if (selectedDesign != selectedShirtColor) {
+    shirtColor.selectedIndex = 0;
   }
 })
 
@@ -105,13 +114,24 @@ function hideHint(showHint, element) {
   if (!showHint) {
     // Show errors 
     element.style.display = "block";
-    element.closest('fieldset').classList.add('not-valid');
-    element.closest('fieldset').classList.remove('valid');
+    if (!!element.closest('label')) {
+      element.closest('label').classList.add('not-valid');
+      element.closest('label').classList.remove('valid');
+    } else {
+      element.previousElementSibling.classList.add('not-valid');
+      element.previousElementSibling.classList.remove('valid');
+    }
   } else {
     // Hide errors 
     element.style.display = "none";
-    element.closest('fieldset').classList.add('valid');
-    element.closest('fieldset').classList.remove('not-valid');
+    if (!!element.closest('label')) {
+      element.closest('label').classList.add('valid');
+      element.closest('label').classList.remove('not-valid');
+    } else {
+      element.previousElementSibling.classList.add('valid');
+      element.previousElementSibling.classList.remove('not-valid');
+    }
+   
   }
 }
 
@@ -142,19 +162,19 @@ function isValidCvv(cvv) {
 // Activities validation
 function activitesSelected() {
   var selected = activities.querySelector('input:checked');
-  const hint = activities.querySelector('.activities-hint');
+  const activitiesHint = activities.querySelector('.activities-hint');
   if (selected) {
     // Show errors 
-    hideHint(true, hint);
     activities.classList.remove('not-valid');
     activities.classList.add('valid');
-    return false;
+    activitiesHint.style.display = "none";
+    return true;
   } else {
     // Hide errors 
-    hideHint(false, hint);
     activities.classList.remove('valid');
     activities.classList.add('not-valid');
-    return true;
+    activitiesHint.style.display = "block";
+    return false;
   }
 }
 
@@ -201,9 +221,8 @@ function passValidation() {
 
 // FORM VALIDATION END
 form.addEventListener('submit', (event) => {
+  if (!passValidation()) {
     event.preventDefault();
-  if (passValidation()) {
-    form.submit()
   }
 });
 
